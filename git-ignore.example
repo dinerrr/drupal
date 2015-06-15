@@ -1,0 +1,36 @@
+# Ignore configuration files that may contain sensitive information.
+app/sites/*/settings*.php
+app/sites/*/drushrc.php
+app/sites/*/local.settings*.php
+
+drushrc.php
+app/sites/sites.php
+
+# Ignore paths that contain user-generated content.
+app/sites/*/files
+app/sites/*/private
+
+# Ignore ide  settings files
+.settings
+.project
+.buildpath
+.idea
+
+# Ignore local installation config files
+conf/local/*
+!conf/local/README.txt
+
+# Ignore local installation config files
+docs/local/*
+!docs/local/README.txt
+
+#ignore databases and files folders located in root
+
+/databases/*
+!databases/README.txt
+
+/files/*
+!files/README.txt
+
+*.pyc
+

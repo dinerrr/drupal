@@ -1,0 +1,132 @@
+<?php
+
+/**
+ * @file
+ * SLinks module.
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function slinks_permission() {
+  return array(
+    'administer slinks' => array(
+      'title' => 'Administer SLinks sharing widget',
+      'description' => 'Administer SLinks sharing widget',
+    ),
+    'view slinks' => array(
+      'title' => 'View the SLinks widget',
+      'description' => 'User can see the button which allows them to share posts',
+    ),
+  );
+}
+
+/**
+ * Implement of hook_menu().
+ */
+function slinks_menu() {
+  $items = array();
+
+  $items['admin/config/system/slinks'] = array(
+    'title'            => t('SLinks'),
+    'description'      => t('SLinks settings'),
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('slinks_admin_settings'),
+    'access arguments' => array('administer slinks'),
+    'file'             => 'slinks.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function slinks_node_view($node, $build_mode) {
+  $links = array();
+  if (user_access('view slinks') && $build_mode == 'full') {
+    if ($node && variable_get('slinks_nodetype_' . $node->type, 0)) {
+      $node->content['slinks'] = array(
+        '#markup' => _slinks_create_button(array('build_mode' => $build_mode)),
+        '#weight' => 80,
+      );
+    }
+  }
+}
+
+
+/**
+ * Implement hook_form_FORM_ID_alter().
+ */
+function slinks_form_node_type_form_alter(&$form, $form_state) {
+  $form['slinks'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('SLinks settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#group' => 'additional_settings',
+  );
+  $form['slinks']['slinks_nodetype'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show SLinks button on this type of node'),
+    '#default_value' => variable_get('slinks_nodetype_' . $form['#node_type']->type, 0),
+    '#description' => t('Select whether the SLinks widget should be shown or not on this type of node.'),
+  );
+}
+
+/**
+ * Internal function to generate code for AddThis button
+ *
+ * @return
+ *   String containing html code for the button
+ */
+function _slinks_create_button($build_mode) {
+
+  global $_slinks_counter;
+  $_slinks_counter++;
+  $output = '';
+  if ($_slinks_counter == 1) {
+    drupal_add_css(drupal_get_path('module', 'slinks') . '/css/slinks.css');
+
+    $output .= '<div class="slinks clearfix">';
+    $path = isset($_GET['q']) ? $_GET['q'] : '<front>';
+    $link = url($path, array('absolute' => TRUE));
+    $link_special = htmlentities($link);
+    //drupal_set_message('_slinks_create_button ' . $link);
+    //drupal_set_message('_slinks_create_button ' . $link_special);
+
+    // Facebook.
+    //$output .= '<iframe src="//www.facebook.com/plugins/like.php?href='.$link.'%2F&amp;send=false&amp;layout=box_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=trebuchet+ms&amp;height=90&amp;appId=254272407970592" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:90px;" allowTransparency="true"></iframe>';
+    $output .= '<div class="slinks-fb"><iframe src="//www.facebook.com/plugins/like.php?href=' . $link . 'l&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=254272407970592" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></div>';
+
+    //Twitter
+    $output .= '<div class="slinks-twitter"><a href="' . $link . '" class="twitter-share-button" data-lang="en">Tweet</a>';
+    $output .= '<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></div>';
+
+    //LinkedIn
+    $output .= '<div class="slinks-ln"><script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+<script type="IN/Share" data-counter="right"></script></div>';
+
+    // Google plus.
+    $output .= <<<STRING_STOP
+<div class="slinks-gplus">
+<!-- Umieść ten tag w miejscu, w którym chcesz wygenerować przycisk +1. -->
+<g:plusone></g:plusone>
+
+<!-- Umieść to wywołanie generujące w odpowiednim miejscu. -->
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+</div>
+STRING_STOP;
+
+    // end div.
+    $output .='</div>';
+  }
+
+  return $output; //theme('addthis_button', array('build_mode' => $build_mode));
+}

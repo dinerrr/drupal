@@ -1,0 +1,14 @@
+.slinks {
+  border: 1px solid #DDD;
+  padding: 10px;
+}
+.slinks div{
+  padding: 5px 0;
+  float: left;
+  margin-right: 20px;
+  width: 120px;
+}
+
+.slinks .slinks-fb{
+
+}

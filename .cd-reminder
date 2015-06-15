@@ -1,0 +1,5 @@
+#/bin/sh
+echo "===="
+echo "====  Warning: check your git branch"
+echo "===="
+git branch

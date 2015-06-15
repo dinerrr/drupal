@@ -1,0 +1,43 @@
+<?php
+/**
+ * @file
+ * Main file.
+ */
+
+
+/**
+ * Implements hook_token_info().
+ */
+function token_addons_token_info() {
+  // Node tokens.
+  $info['tokens']['node']['body-filtered-150chars'] = array(
+    'name' => t("Body 150 chars"),
+    'description' => t("Body trimmed to 150 characters. Custom token from token_addons module."),
+  );
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function token_addons_tokens($type, $tokens, array $data = array(), array $options = array()) {
+
+  $replacements = array();
+
+  if ($type == 'node' && !empty($data['node'])) {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'body-filtered-150chars':
+
+          $node = $data['node'];
+          $body = check_markup($node->body['und'][0]['value'], $node->body['und'][0]['format']);
+          $body = strip_tags($body);
+          $body = preg_replace('/[\n\r]+/', ' ', trim($body));
+
+          $replacements[$original] = truncate_utf8($body, 150, TRUE);
+          break;
+      }
+    }
+    return $replacements;
+  }
+}

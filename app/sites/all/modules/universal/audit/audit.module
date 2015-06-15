@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * Implements hook_permission().
+ */
+function audit_permission() {
+  return array(
+    'access audit' => array(
+      'title' => t('access audit'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function audit_menu() {
+
+  $items['admin/reports/audit'] = array(
+    'title' => 'Audit',
+    'description' => 'Audit',
+    'page callback' => 'audit_report_page',
+    'access arguments' => array('access audit'),
+    'file' => 'audit.admin.inc',
+  );
+
+  return $items;
+}

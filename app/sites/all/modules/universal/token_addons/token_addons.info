@@ -1,0 +1,9 @@
+name = Token Addons
+core = 7.x
+package = APP
+
+version = 7.x-1.0-beta1
+project = blogpost
+dependencies[] = token
+
+project status url = http://updates-drupal.droptica.com/droptica/release-history

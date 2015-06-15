@@ -1,0 +1,45 @@
+<?php
+
+
+/**
+ * Implements hook_help().
+ */
+function entityexport_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#entityexport':
+      $output = '';
+      $output .= '<p>' . t('entityexport module - helper functions') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function entityexport_permission() {
+  return array(
+    'entity export' => array(
+      'title' => t('entity export'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function entityexport_menu() {
+  $items = array();
+  $items['node/%node/entityexport'] = array(
+    'title' => 'Node Export',
+    'page callback' => 'entityexport_node_page',
+    'page arguments' => array(1),
+    'access arguments' => array('entity export'),
+    'weight' => 1,
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'entityexport.pages.inc',
+  );
+
+  return $items;
+}
