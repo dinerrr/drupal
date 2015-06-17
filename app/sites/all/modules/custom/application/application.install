@@ -1,0 +1,16 @@
+<?php
+/**
+ * Enable content types features.
+ */
+function application_update_7001() {
+  $module_list = array(
+    'module_filter',
+
+  );
+  module_enable($module_list);
+  module_list(TRUE, FALSE);
+
+// Flush caches.
+  drupal_flush_all_caches();
+}
+
